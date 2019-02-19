@@ -10,8 +10,8 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import org.junit.Assert;
 import java.util.List;
-
 import static com.cybertek.pages.ProductPage.productName;
+
 
 public class Product_step_definitions {
 
@@ -68,6 +68,7 @@ public class Product_step_definitions {
         ProductPage productPage = new ProductPage();
         productPage.productsLink.click();
         productName(name);
+
     }
 
     @Then("user should see these buttons on the top left")
@@ -121,3 +122,5 @@ public class Product_step_definitions {
 
 
 }
+
+
