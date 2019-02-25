@@ -130,243 +130,273 @@ public class AllChannelsSalesOrdersPageStepDefinitions {
         Assert.assertTrue(found);
     }
 
-//--------------------------------------------------------------------------------
-        public void FavoritesMenuTest2() throws InterruptedException {
-            filter();
+    //APPLY THE SAVED SEARCH RESULT AND DELETE IT-----------------------------------------------------
 
-            allChannelsSalesOrdersPage.favorites.click();
+    @When("sales manager applies the {string} and delete it")
+    public void sales_manager_applies_the_and_delete_it(String option) throws InterruptedException {
+        allChannelsSalesOrdersPage.favorites.click();
 
-
-            List<WebElement> fav = new ArrayList<>(Driver.getDriver().findElements(By.xpath("/html/body/div[1]/div[2]/div[1]/div[3]/div[1]/div[3]/ul/li")));
-            boolean found = false;
-            for (int i = 0; i < fav.size(); i++) {
-                if (fav.get(i).getText().equals("sale1")) {
-                    fav.get(i).click();
-                    Thread.sleep(3000);
-                    found = true;
-                    String delete = "//li[" + (i + 1) + "]/span[@class='fa fa-trash-o o-remove-filter' and 1]";
-                    Driver.getDriver().findElement(By.xpath(delete)).click();
-                    Alert alert = Driver.getDriver().switchTo().alert();
-                    alert.accept();
-                }
+        List<WebElement> fav = new ArrayList<>(Driver.getDriver().findElements(By.xpath("/html/body/div[1]/div[2]/div[1]/div[3]/div[1]/div[3]/ul/li")));
+        boolean found = false;
+        for (int i = 0; i < fav.size(); i++) {
+            if (fav.get(i).getText().equals(option)) {
+                fav.get(i).click();
+                Thread.sleep(3000);
+                found = true;
+                String delete = "//li[" + (i + 1) + "]/span[@class='fa fa-trash-o o-remove-filter' and 1]";
+                Driver.getDriver().findElement(By.xpath(delete)).click();
+                Alert alert = Driver.getDriver().switchTo().alert();
+                alert.accept();
             }
+        }
+    }
 
 
-            fav = new ArrayList<>(Driver.getDriver().findElements(By.xpath("/html/body/div[1]/div[2]/div[1]/div[3]/div[1]/div[3]/ul/li")));
-            found = fav.contains("sale1");
+    @Then("{string} option should no longer be on the favorites menu")
+    public void option_should_no_longer_be_on_the_favorites_menu(String option) {
+        List<WebElement> fav = new ArrayList<>(Driver.getDriver().findElements(By.xpath("/html/body/div[1]/div[2]/div[1]/div[3]/div[1]/div[3]/ul/li")));
+        fav = new ArrayList<>(Driver.getDriver().findElements(By.xpath("/html/body/div[1]/div[2]/div[1]/div[3]/div[1]/div[3]/ul/li")));
+        boolean found = fav.contains(option);
 
+        Assert.assertFalse(found);
+    }
 
-            Assert.assertFalse(found);
+//SHARE THE SAVED RESULTS WITH ALL USERS----------------------------------------------------------------------
+
+    @When("sales manager saves the current search results as {string} and check the {string} box")
+    public void sales_manager_saves_the_current_search_results_as_and_check_the_box(String name, String share) {
+        allChannelsSalesOrdersPage.favorites.click();
+        allChannelsSalesOrdersPage.saveCurrentSearch.click();
+        allChannelsSalesOrdersPage.favoritesText.clear();
+        allChannelsSalesOrdersPage.favoritesText.sendKeys(name);
+
+        List<WebElement> fav = new ArrayList<>(Driver.getDriver().findElements(By.xpath("/html/body/div[1]/div[2]/div[1]/div[3]/div[1]/div[3]/ul/li")));
+        boolean found = false;
+        for (int i = 0; i < fav.size(); i++) {
+            if (fav.get(i).getText().trim().equals(share)) {
+                String checkbox = "/html/body/div[1]/div[2]/div[1]/div[3]/div[1]/div[3]/ul/li[" + (i + 1) + "]/span[1]/div/input";
+                Driver.getDriver().findElement(By.xpath(checkbox)).click();
+            }
         }
 
-        public void FavoritesMenuTest3() throws InterruptedException {
-            filter();
-            allChannelsSalesOrdersPage.favorites.click();
-            allChannelsSalesOrdersPage.saveCurrentSearch.click();
-            allChannelsSalesOrdersPage.favoritesText.clear();
-            allChannelsSalesOrdersPage.favoritesText.sendKeys("sale7");
+        allChannelsSalesOrdersPage.favoritesSaveButton.click();
+    }
 
-            List<WebElement> fav = new ArrayList<>(Driver.getDriver().findElements(By.xpath("/html/body/div[1]/div[2]/div[1]/div[3]/div[1]/div[3]/ul/li")));
-            boolean found = false;
-            for (int i = 0; i < fav.size(); i++) {
-                if (fav.get(i).getText().trim().equals("Share with all users")) {
-                    String checkbox = "/html/body/div[1]/div[2]/div[1]/div[3]/div[1]/div[3]/ul/li[" + (i + 1) + "]/span[1]/div/input";
-                    Driver.getDriver().findElement(By.xpath(checkbox)).click();
-                }
+    @Then("favorites menu should have the {string} option")
+    public void favorites_menu_should_have_the_option(String option) throws InterruptedException {
+        List<WebElement> fav = new ArrayList<>(Driver.getDriver().findElements(By.xpath("/html/body/div[1]/div[2]/div[1]/div[3]/div[1]/div[3]/ul/li")));
+        Driver.getDriver().navigate().refresh();
+        Thread.sleep(5000);
+        allChannelsSalesOrdersPage.favorites.click();
+
+        fav = new ArrayList<>(Driver.getDriver().findElements(By.xpath("/html/body/div[1]/div[2]/div[1]/div[3]/div[1]/div[3]/ul/li")));
+        boolean found = false;
+        for (int i = 0; i < fav.size(); i++) {
+            if (fav.get(i).getText().trim().equals(option)) {
+                found = true;
             }
-
-            allChannelsSalesOrdersPage.favoritesSaveButton.click();
-
-            Driver.getDriver().navigate().refresh();
-            Thread.sleep(5000);
-            allChannelsSalesOrdersPage.favorites.click();
-
-            fav = new ArrayList<>(Driver.getDriver().findElements(By.xpath("/html/body/div[1]/div[2]/div[1]/div[3]/div[1]/div[3]/ul/li")));
-            found = false;
-            for (int i = 0; i < fav.size(); i++) {
-                if (fav.get(i).getText().trim().equals("sale7")) {
-                    found = true;
-                }
-            }
-
-            Assert.assertTrue(found);
         }
 
-        public void FavoritesMenuTest4() throws InterruptedException {
-            filter();
+        Assert.assertTrue(found);
+    }
+    //APPLY AND DELETE THE SHARED SEARCH RESULTS (BUG)-------------------------------------------------------------------------------------------
 
-            allChannelsSalesOrdersPage.favorites.click();
-            
-            List<WebElement> fav = new ArrayList<>(Driver.getDriver().findElements(By.xpath("/html/body/div[1]/div[2]/div[1]/div[3]/div[1]/div[3]/ul/li")));
-            boolean found = false;
-            for (int i = 0; i < fav.size(); i++) {
-                if (fav.get(i).getText().equals("sale2")) {
-                    fav.get(i).click();
-                    found = true;
-                    Thread.sleep(3000);
-                    String delete = "//li[" + (i + 1) + "]/span[@class='fa fa-trash-o o-remove-filter' and 1]";
-                    Driver.getDriver().findElement(By.xpath(delete)).click();
-                    Alert alert = Driver.getDriver().switchTo().alert();
-                    alert.accept();
-                }
+    @When("sales manager applies the shared search result and delete it from the favorites menu")
+    public void sales_manager_applies_the_shared_search_result_and_delete_it_from_the_favorites_menu() throws InterruptedException {
+        allChannelsSalesOrdersPage.favorites.click();
+
+        List<WebElement> fav = new ArrayList<>(Driver.getDriver().findElements(By.xpath("/html/body/div[1]/div[2]/div[1]/div[3]/div[1]/div[3]/ul/li")));
+        boolean found = false;
+        for (int i = 0; i < fav.size(); i++) {
+            if (fav.get(i).getText().equals("sale2")) {
+                fav.get(i).click();
+                found = true;
+                Thread.sleep(3000);
+                String delete = "//li[" + (i + 1) + "]/span[@class='fa fa-trash-o o-remove-filter' and 1]";
+                Driver.getDriver().findElement(By.xpath(delete)).click();
+                Alert alert = Driver.getDriver().switchTo().alert();
+                alert.accept();
             }
+        }
 
-            if (Driver.getDriver().findElement(By.xpath("//button[@class='btn btn-sm btn-primary']")).isDisplayed()) {
+        if (Driver.getDriver().findElement(By.xpath("//button[@class='btn btn-sm btn-primary']")).isDisplayed()) {
+            Driver.getDriver().findElement(By.xpath("//button[@class='btn btn-sm btn-primary']")).click();
+        }
+    }
+
+    @Then("shared {string} option should no longer be on the favorites menu")
+    public void shared_option_should_no_longer_be_on_the_favorites_menu(String name) throws InterruptedException {
+        List<WebElement> fav = new ArrayList<>(Driver.getDriver().findElements(By.xpath("/html/body/div[1]/div[2]/div[1]/div[3]/div[1]/div[3]/ul/li")));
+        Driver.getDriver().navigate().refresh();
+        Thread.sleep(5000);
+        allChannelsSalesOrdersPage.favorites.click();
+
+        fav = new ArrayList<>(Driver.getDriver().findElements(By.xpath("/html/body/div[1]/div[2]/div[1]/div[3]/div[1]/div[3]/ul/li")));
+        boolean found = false;
+        for (int i = 0; i < fav.size(); i++) {
+            if (fav.get(i).getText().trim().equals(name)) {
+                found = true;
+            }
+        }
+
+        Assert.assertFalse(found);
+    }
+
+//SAVES CURRENT SEARCH RESULT AS A DEFAULT RESULT----------------------------------------------------------------
+
+    @When("sales manager saves the current search result as {string} and default results")
+    public void sales_manager_saves_the_current_search_result_as_and_default_results(String name) {
+        allChannelsSalesOrdersPage.favorites.click();
+        allChannelsSalesOrdersPage.saveCurrentSearch.click();
+        allChannelsSalesOrdersPage.favoritesText.clear();
+        allChannelsSalesOrdersPage.favoritesText.sendKeys(name);
+
+        List<WebElement> fav = new ArrayList<>(Driver.getDriver().findElements(By.xpath("/html/body/div[1]/div[2]/div[1]/div[3]/div[1]/div[3]/ul/li")));
+        boolean found = false;
+        for (int i = 0; i < fav.size(); i++) {
+            if (fav.get(i).getText().trim().equals("Use by default")) {
+                String checkbox = "/html/body/div[1]/div[2]/div[1]/div[3]/div[1]/div[3]/ul/li[" + (i + 1) + "]/span[1]/div/input";
+                Driver.getDriver().findElement(By.xpath(checkbox)).click();
+            }
+        }
+
+        allChannelsSalesOrdersPage.favoritesSaveButton.click();
+    }
+
+    @When("logs out and logs back in to the website")
+    public void logs_out_and_logs_back_in_to_the_website() throws InterruptedException {
+        Driver.getDriver().findElement(By.xpath("//span[@class='oe_topbar_name']")).click(); // Click on the username on the top right
+        Driver.getDriver().findElement(By.xpath("//ul[@class='dropdown-menu']/li[6]/a[1]")).click(); // Click on the logout
+        Thread.sleep(5000);
+
+        loginPage.BriteErpLink.click();
+        loginPage.signIn.click();
+        loginPage.email.sendKeys("in_manager2@info.com");
+        loginPage.password.sendKeys("Wdf4ssa45");
+        loginPage.logInButton.click();
+        allChannelsSalesOrdersPage.salesMenu.click();
+        Thread.sleep(5000);
+        allChannelsSalesOrdersPage.allChannelsSalesOrdersLink.click();
+        Thread.sleep(5000);
+    }
+
+    @Then("sales manager should see {string} label on the search box as a default result")
+    public void sales_manager_should_see_label_on_the_search_box_as_a_default_result(String name) {
+        String defaultSearch = Driver.getDriver().findElement(By.xpath("//div[@class='o_facet_values']/span[1]")).getText();
+        Assert.assertTrue(defaultSearch.equals(name));
+    }
+
+ //SAVES AND ACCESSES THE SEARCH RESULT UNDER DASHBOARD MENU---------------------------------------------------
+ @When("sales manager saves the current search results as {string} to the Dashboard")
+ public void sales_manager_saves_the_current_search_results_as_to_the_Dashboard(String name) throws InterruptedException {
+     Driver.getDriver().manage().window().maximize();
+     allChannelsSalesOrdersPage.favorites.click();
+     allChannelsSalesOrdersPage.addToMyDashboard.click();
+     allChannelsSalesOrdersPage.dashboardText.clear();
+     allChannelsSalesOrdersPage.dashboardText.sendKeys(name);
+     allChannelsSalesOrdersPage.dasboardAddButton.click();
+     Thread.sleep(5000);
+ }
+
+    @Then("sales manager should be able access {string} under Dashboard menu")
+    public void sales_manager_should_be_able_access_under_Dashboard_menu() throws InterruptedException {
+        allChannelsSalesOrdersPage.dashboardsMenu.click();
+        Thread.sleep(10000);
+
+        List<WebElement> search = new ArrayList<>(Driver.getDriver().findElements(By.xpath("//*[@id=\"column_0\"]/div")));
+        boolean found = false;
+        for (int i = 0; i < search.size(); i++) {
+            System.out.println(search.get(i).getText());
+            if (search.get(i).getText().trim().startsWith("sale9")) {
+                found = true;
+            }
+        }
+        Assert.assertTrue(found);
+    }
+
+//DELETES THE SAVED SEARCH RESULTS FROM DASHBOARD-----------------------------------------------------
+
+    @When("sales manager goes to the Dashboard and delete the {string} results")
+    public void sales_manager_goes_to_the_Dashboard_and_delete_the_results(String name) throws InterruptedException {
+        Driver.getDriver().manage().window().maximize();
+        Driver.getDriver().manage().timeouts().implicitlyWait(5000, TimeUnit.SECONDS);
+
+        allChannelsSalesOrdersPage.dashboardsMenu.click();
+        Thread.sleep(10000);
+
+        List<WebElement> search = new ArrayList<>(Driver.getDriver().findElements(By.xpath("//*[@id=\"column_0\"]/div")));
+        boolean found = false;
+        for (int i = 0; i < search.size(); i++) {
+            if (search.get(i).getText().startsWith(name)) {
+                String xpath = "//*[@id=\"column_0\"]/div[" + (i + 1) + "]/h2/span[2]";
+                Driver.getDriver().findElement(By.xpath(xpath)).click();
                 Driver.getDriver().findElement(By.xpath("//button[@class='btn btn-sm btn-primary']")).click();
             }
+        }
+    }
 
-
-            Driver.getDriver().navigate().refresh();
-            Thread.sleep(5000);
-            allChannelsSalesOrdersPage.favorites.click();
-
-            fav = new ArrayList<>(Driver.getDriver().findElements(By.xpath("/html/body/div[1]/div[2]/div[1]/div[3]/div[1]/div[3]/ul/li")));
-            found = false;
-            for (int i = 0; i < fav.size(); i++) {
-                if (fav.get(i).getText().trim().equals("sale2")) {
-                    found = true;
-                }
+    @Then("Dashboard menu should no longer have the {string} result")
+    public void dashboard_menu_should_no_longer_have_the_result(String name) {
+        boolean found = false;
+        List<WebElement> search = new ArrayList<>(Driver.getDriver().findElements(By.xpath("//*[@id=\"column_0\"]/div")));
+        search = new ArrayList<>(Driver.getDriver().findElements(By.xpath("//*[@id=\"column_0\"]/div")));
+        for (int i = 0; i < search.size(); i++) {
+            if (search.get(i).getText().startsWith(name)) {
+                String xpath = "//*[@id=\"column_0\"]/div[" + (i + 1) + "]/h2/span[2]";
+                Driver.getDriver().findElement(By.xpath(xpath)).click();
+                found = true;
             }
-
-            Assert.assertFalse(found);
         }
 
-        public void FavoritesMenuTest5() throws InterruptedException {
-            filter();
-            allChannelsSalesOrdersPage.favorites.click();
-            allChannelsSalesOrdersPage.saveCurrentSearch.click();
-            allChannelsSalesOrdersPage.favoritesText.clear();
-            allChannelsSalesOrdersPage.favoritesText.sendKeys("sale9");
+        Assert.assertFalse(found);
+    }
 
-            List<WebElement> fav = new ArrayList<>(Driver.getDriver().findElements(By.xpath("/html/body/div[1]/div[2]/div[1]/div[3]/div[1]/div[3]/ul/li")));
-            boolean found = false;
-            for (int i = 0; i < fav.size(); i++) {
-                if (fav.get(i).getText().trim().equals("Use by default")) {
-                    String checkbox = "/html/body/div[1]/div[2]/div[1]/div[3]/div[1]/div[3]/ul/li[" + (i + 1) + "]/span[1]/div/input";
-                    Driver.getDriver().findElement(By.xpath(checkbox)).click();
-                }
+//ADDS A COLUMN TO THE SEARCH RESULTS-------------------------------------------------------------------
+
+    @When("sales manager choose {string} under the Measure Menu")
+    public void sales_manager_choose_under_the_Measure_Menu(String string) throws InterruptedException {
+        allChannelsSalesOrdersPage.measuresMenu.click();
+        allChannelsSalesOrdersPage.productQuantity.click();
+
+        Driver.getDriver().findElement(By.xpath("/html/body/div[1]/div[2]/div[2]/div/div")).click();
+        Thread.sleep(3000);
+    }
+
+    @Then("search result should show the {string} column in in the search result")
+    public void search_result_should_show_the_column_in_in_the_search_result(String string) {
+        List<WebElement> columns = new ArrayList<>(Driver.getDriver().findElements(By.xpath("/html/body/div[1]/div[2]/div[2]/div/div/table/thead/tr[2]/th")));
+        boolean found = false;
+        for (int i = 0; i < columns.size(); i++) {
+            if (columns.get(i).getText().startsWith("Product Quantity")) {
+                found = true;
             }
-
-            allChannelsSalesOrdersPage.favoritesSaveButton.click();
-            Driver.getDriver().findElement(By.xpath("//span[@class='oe_topbar_name']")).click(); // Click on the username on the top right
-            Driver.getDriver().findElement(By.xpath("//ul[@class='dropdown-menu']/li[6]/a[1]")).click(); // Click on the logout
-            Thread.sleep(5000);
-
-            loginPage.BriteErpLink.click();
-            loginPage.signIn.click();
-            loginPage.email.sendKeys("in_manager2@info.com");
-            loginPage.password.sendKeys("Wdf4ssa45");
-            loginPage.logInButton.click();
-
-            allChannelsSalesOrdersPage.salesMenu.click();
-            Thread.sleep(5000);
-            allChannelsSalesOrdersPage.allChannelsSalesOrdersLink.click();
-            Thread.sleep(5000);
-
-            String defaultSearch = Driver.getDriver().findElement(By.xpath("//div[@class='o_facet_values']/span[1]")).getText();
-
-            Assert.assertTrue(defaultSearch.equals("sale9"));
         }
 
-        public void FavoritesMenuTest6() throws InterruptedException {
-            Driver.getDriver().manage().window().maximize();
-            filter();
-            allChannelsSalesOrdersPage.favorites.click();
-            allChannelsSalesOrdersPage.addToMyDashboard.click();
-            allChannelsSalesOrdersPage.dashboardText.clear();
-            allChannelsSalesOrdersPage.dashboardText.sendKeys("sale9");
-            allChannelsSalesOrdersPage.dasboardAddButton.click();
-            Thread.sleep(5000);
-            allChannelsSalesOrdersPage.dashboardsMenu.click();
-            Thread.sleep(10000);
+        Assert.assertTrue(found);
+    }
 
-            List<WebElement> search = new ArrayList<>(Driver.getDriver().findElements(By.xpath("//*[@id=\"column_0\"]/div")));
-            boolean found = false;
-            for (int i = 0; i < search.size(); i++) {
-                System.out.println(search.get(i).getText());
-                if (search.get(i).getText().trim().startsWith("sale9")) {
-                    found = true;
-                }
-            }
-            Assert.assertTrue(found);
+//GROUPS THE SEARCH RESULTS-------------------------------------------------------------------------------------
+
+    @When("sales manager choose Group by menu and add {string} and hit Save Button")
+    public void sales_manager_choose_Group_by_menu_and_add_and_hit_Save_Button(String string) {
+        if (!allChannelsSalesOrdersPage.filters.isDisplayed()) {
+            BrowserUtils.waitForClickablility(allChannelsSalesOrdersPage.advancedSearch, 5);
+            allChannelsSalesOrdersPage.advancedSearch.click();
         }
 
+        allChannelsSalesOrdersPage.groupByMenu.click();
+        allChannelsSalesOrdersPage.addCustomGroup.click();
+        Select groupByOptions = new Select(allChannelsSalesOrdersPage.groupBySelect);
+        groupByOptions.selectByVisibleText("Salesperson");
+        allChannelsSalesOrdersPage.groupBySaveButton.click();
+    }
 
-        public void FavoritesMenuTest7() throws InterruptedException {
-            Driver.getDriver().manage().window().maximize();
-            Driver.getDriver().manage().timeouts().implicitlyWait(5000, TimeUnit.SECONDS);
+    @Then("search results should be grouped by {string} criteria")
+    public void search_results_should_be_grouped_by_criteria(String string) {
+        Driver.getDriver().findElement(By.xpath("/html/body/div[1]/div[2]/div[2]/div/div")).click();
 
-            allChannelsSalesOrdersPage.dashboardsMenu.click();
+        Assert.assertTrue(true);
+    }
 
-            allChannelsSalesOrdersPage.dashboardsMenu.click();
-            Thread.sleep(10000);
-
-            List<WebElement> search = new ArrayList<>(Driver.getDriver().findElements(By.xpath("//*[@id=\"column_0\"]/div")));
-            boolean found = false;
-            for (int i = 0; i < search.size(); i++) {
-                if (search.get(i).getText().startsWith("sale9")) {
-                    String xpath = "//*[@id=\"column_0\"]/div[" + (i + 1) + "]/h2/span[2]";
-                    Driver.getDriver().findElement(By.xpath(xpath)).click();
-                    Driver.getDriver().findElement(By.xpath("//button[@class='btn btn-sm btn-primary']")).click();
-                }
-            }
-
-            search = new ArrayList<>(Driver.getDriver().findElements(By.xpath("//*[@id=\"column_0\"]/div")));
-            for (int i = 0; i < search.size(); i++) {
-                if (search.get(i).getText().startsWith("sale9")) {
-                    String xpath = "//*[@id=\"column_0\"]/div[" + (i + 1) + "]/h2/span[2]";
-                    Driver.getDriver().findElement(By.xpath(xpath)).click();
-                    found = true;
-                }
-            }
-
-            Assert.assertFalse(found);
-        }
-
-        public void FiltersMenuTest() throws InterruptedException {
-            filter();
-
-            Assert.assertTrue(true);
-
-        }
-
-        public void MeasuresMenuTest() throws InterruptedException {
-            
-            allChannelsSalesOrdersPage.measuresMenu.click();
-            allChannelsSalesOrdersPage.productQuantity.click();
-
-            Driver.getDriver().findElement(By.xpath("/html/body/div[1]/div[2]/div[2]/div/div")).click();
-            Thread.sleep(3000);
-
-            List<WebElement> columns = new ArrayList<>(Driver.getDriver().findElements(By.xpath("/html/body/div[1]/div[2]/div[2]/div/div/table/thead/tr[2]/th")));
-            boolean found = false;
-            for (int i = 0; i < columns.size(); i++) {
-                if (columns.get(i).getText().startsWith("Product Quantity")) {
-                    found = true;
-                }
-            }
-
-            Assert.assertTrue(found);
-
-        }
-
-        public void GroupByMenuTest() throws InterruptedException {
-
-            if (!allChannelsSalesOrdersPage.filters.isDisplayed()) {
-                BrowserUtils.waitForClickablility(allChannelsSalesOrdersPage.advancedSearch, 5);
-                allChannelsSalesOrdersPage.advancedSearch.click();
-            }
-
-            allChannelsSalesOrdersPage.groupByMenu.click();
-            allChannelsSalesOrdersPage.addCustomGroup.click();
-            Select groupByOptions = new Select(allChannelsSalesOrdersPage.groupBySelect);
-            groupByOptions.selectByVisibleText("Salesperson");
-            allChannelsSalesOrdersPage.groupBySaveButton.click();
-
-            Driver.getDriver().findElement(By.xpath("/html/body/div[1]/div[2]/div[2]/div/div")).click();
-
-            Assert.assertTrue(true);
-
-        }
         
     }
